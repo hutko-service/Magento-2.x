@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <hutko>
+                <model>HutkoAdapter</model>
+                <group>offline</group>
+                <active>0</active>
+                <title>Hutko</title>
+                <payment_action>order</payment_action>
+                <order_status>payment_review</order_status>
+                <allowspecific>0</allowspecific>
+                <can_refund>1</can_refund>
+                <can_use_checkout>1</can_use_checkout>
+            </hutko>
+            <hutko_direct>
+                <group>offline</group>
+                <model>HutkoDirectAdapter</model>
+                <payment_action>order</payment_action>
+                <active>0</active>
+                <title>Hutko Direct</title>
+                <allowspecific>0</allowspecific>
+                <min_order_total>0.50</min_order_total>
+                <can_use_checkout>1</can_use_checkout>
+                <order_status>payment_review</order_status>
+                <allowspecific>0</allowspecific>
+                <can_refund>1</can_refund>
+                <is_offline>0</is_offline>
+            </hutko_direct>
+        </payment>
+    </default>
+</config>

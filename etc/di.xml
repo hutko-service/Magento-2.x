@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Hutko Direct Payment Method Facade configuration -->
+    <virtualType name="HutkoDirectAdapter" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Hutko\Hutko\Model\Ui\HutkoDirectConfig::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Hutko\Hutko\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">HutkoDirectValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">HutkoDirectCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="HutkoAdapter" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Hutko\Hutko\Model\Ui\HutkoConfig::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Hutko\Hutko\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">HutkoValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">HutkoCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration reader -->
+    <virtualType name="HutkoDirectConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Hutko\Hutko\Model\Ui\HutkoDirectConfig::CODE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="HutkoConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Hutko\Hutko\Model\Ui\HutkoConfig::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Logger, initialized with Hutko Config -->
+    <virtualType name="HutkoDirectLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">HutkoDirectConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="HutkoLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">HutkoConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Commands infrastructure -->
+    <virtualType name="HutkoDirectCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="HutkoCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Value handlers infrastructure -->
+    <virtualType name="HutkoDirectValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">HutkoDirectConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="HutkoValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">HutkoConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="HutkoDirectConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">HutkoDirectConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="HutkoConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">HutkoConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Hutko\Hutko\Block\Info">
+        <arguments>
+            <argument name="config" xsi:type="object">HutkoDirectConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Logger implementation -->
+    <type name="Hutko\Hutko\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Hutko\Hutko\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">HutkoLogger</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">Hutko\Hutko\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
+    <preference for="Hutko\Hutko\Api\CallbackInterface" type="Hutko\Hutko\Model\Callback" />
+    <type name="Magento\Framework\Webapi\Rest\Request\DeserializerFactory">
+        <arguments>
+            <argument name="deserializers" xsi:type="array">
+                <item name="application_json" xsi:type="array">
+                    <item name="type" xsi:type="string">application/json</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Json</item>
+                </item>
+                <item name="application_xml" xsi:type="array">
+                    <item name="type" xsi:type="string">application/xml</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+                <item name="application_xhtml_xml" xsi:type="array">
+                    <item name="type" xsi:type="string">application/xhtml+xml</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+                <item name="text_xml" xsi:type="array">
+                    <item name="type" xsi:type="string">text/xml</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+                <item name="application_x_www_form_urlencoded_json" xsi:type="array">
+                    <item name="type" xsi:type="string">application/x-www-form-urlencoded</item>
+                    <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Json</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>
